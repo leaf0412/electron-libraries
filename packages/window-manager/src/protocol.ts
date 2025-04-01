@@ -1,4 +1,4 @@
-import { protocol } from 'electron';
+import { protocol, app } from 'electron';
 import path from 'node:path';
 import fs from 'node:fs';
 import { URL } from 'node:url';
@@ -141,7 +141,15 @@ export const createProtocol = ({
     try {
       const requestUrl = new URL(request.url);
       const urlPath = normalizePath(requestUrl.pathname, directory);
-      const filePath = path.resolve(process.cwd(), urlPath);
+      let basePath;
+      if (process.env.NODE_ENV === 'development') {
+        // In development mode
+        basePath = process.cwd();
+      } else {
+        // In production mode, use app's path
+        basePath = app.getAppPath();
+      }
+      const filePath = path.resolve(basePath, urlPath);
 
       return await createFileResponse(filePath);
     } catch (error) {
