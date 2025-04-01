@@ -57,6 +57,16 @@ const bundles = [
     external,
     plugins: [getTypeScriptConfig(DIST_DIR), ...prodPlugins],
   },
+  // Protocol bundles
+  {
+    input: 'src/protocol.ts',
+    output: [
+      getOutputConfig('cjs', 'js', true, 'protocol'),
+      getOutputConfig('es', 'mjs', true, 'protocol'),
+    ],
+    external,
+    plugins: [getTypeScriptConfig(DIST_DIR), ...prodPlugins],
+  },
   // Type definitions
   {
     input: 'src/index.ts',
@@ -68,6 +78,13 @@ const bundles = [
   {
     input: 'src/preload.ts',
     output: getOutputConfig('es', 'd.ts', false, 'preload'),
+    external,
+    plugins: [dts()],
+  },
+  // Protocol type definitions
+  {
+    input: 'src/protocol.ts',
+    output: getOutputConfig('es', 'd.ts', false, 'protocol'),
     external,
     plugins: [dts()],
   },

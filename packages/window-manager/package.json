@@ -18,6 +18,11 @@
       "types": "./dist/preload.d.ts",
       "require": "./dist/preload.js",
       "import": "./dist/preload.mjs"
+    },
+    "./protocol": {
+      "types": "./dist/protocol.d.ts",
+      "require": "./dist/protocol.js",
+      "import": "./dist/protocol.mjs"
     }
   },
   "scripts": {
