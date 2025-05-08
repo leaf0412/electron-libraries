@@ -55,11 +55,10 @@ h1 {
 }
 
 .info {
-  background: #f5f5f5;
-  padding: 1.5rem;
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: #f5f5f5;
   border-radius: 8px;
-  margin-bottom: 2rem;
-  text-align: left;
 }
 
 .info p {
@@ -71,24 +70,46 @@ h1 {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  flex-wrap: wrap;
+  margin: 2rem 0;
 }
 
-button {
-  background: #646cff;
-  color: white;
+.controls button {
+  padding: 0.5rem 1rem;
   border: none;
-  padding: 0.8rem 1.5rem;
   border-radius: 4px;
+  background-color: #646cff;
+  color: white;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s;
 }
 
-button:hover {
-  background: #535bf2;
+.controls button:hover {
+  background-color: #535bf2;
 }
 
-button:active {
-  transform: scale(0.98);
+.menu-controls {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #e9e9e9;
+  border-radius: 8px;
+}
+
+.menu-controls h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.menu-controls button {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.menu-controls button:hover {
+  background-color: #45a049;
 }
