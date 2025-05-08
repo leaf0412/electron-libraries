@@ -9,6 +9,7 @@ export type WindowOptions = Electron.BrowserWindowConstructorOptions & {
 };
 
 export interface WindowInfoParams {
+  winId?: number;
   isBounds?: boolean;
   isMaximized?: boolean;
   isMinimized?: boolean;

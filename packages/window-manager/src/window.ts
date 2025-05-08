@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { BrowserWindow } from 'electron';
 // import { join } from 'node:path';
 // import { fileURLToPath } from 'node:url';
 import {
@@ -72,12 +72,13 @@ class WindowManager {
     const opt = this.windowOptionsConfig;
     const args = Object.assign({}, opt, options);
 
-    for (const i in this.group) {
-      const currentWindow = this.getWindow(Number(i));
-      const { route, isMultiWindow } = this.group.get(i);
-      if (currentWindow && route === args.route && !isMultiWindow) {
-        currentWindow.focus();
-        return currentWindow;
+    if (args.route && !args.isMultiWindow) {
+      for (const [id, data] of this.group.entries()) {
+        const currentWindow = BrowserWindow.fromId(id);
+        if (currentWindow && data.route === args.route) {
+          currentWindow.focus();
+          return currentWindow;
+        }
       }
     }
 
@@ -127,15 +128,14 @@ class WindowManager {
   }
 
   closeAllWindow() {
-    for (const i in this.group) {
-      if (this.group.get(i)) {
-        if (this.getWindow(Number(i))) {
-          this.getWindow(Number(i))?.close();
-        } else {
-          app.quit();
-        }
+    const windows = Array.from(this.group.keys());
+    for (const id of windows) {
+      const win = BrowserWindow.fromId(id);
+      if (win) {
+        win.close();
       }
     }
+    this.group.clear();
   }
 }
 

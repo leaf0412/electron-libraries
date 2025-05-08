@@ -126,7 +126,10 @@ class WindowIpcHandler {
     ipcMain.handle(
       WindowEvents.GET_WINDOW_INFO,
       (_event, params: WindowInfoParams = {}): WindowInfo => {
-        const win = BrowserWindow.fromWebContents(_event.sender);
+        const winId = params.winId;
+        const win = winId
+          ? this.windowManager.getWindow(winId)
+          : BrowserWindow.fromWebContents(_event.sender);
         if (!win) {
           throw new Error('Window not found');
         }
