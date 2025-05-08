@@ -1,120 +1,68 @@
-import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-
-export interface WindowOptions extends BrowserWindowConstructorOptions {
+export type WindowOptions = Electron.BrowserWindowConstructorOptions & {
   id?: number;
-  isMainWin?: boolean;
   route?: string;
   isMultiWindow?: boolean;
-  parentId?: number;
+  isMainWin?: boolean;
   maximize?: boolean;
-  title?: string;
-  width?: number;
-  height?: number;
-  x?: number;
-  y?: number;
-  center?: boolean;
-  minWidth?: number;
-  minHeight?: number;
-  maxWidth?: number;
-  maxHeight?: number;
-  resizable?: boolean;
-  movable?: boolean;
-  minimizable?: boolean;
-  maximizable?: boolean;
-  closable?: boolean;
-  focusable?: boolean;
-  alwaysOnTop?: boolean;
-  fullscreen?: boolean;
-  skipTaskbar?: boolean;
-  frame?: boolean;
-  transparent?: boolean;
-  backgroundColor?: string;
-  hasShadow?: boolean;
-  thickFrame?: boolean;
-  webPreferences?: {
-    nodeIntegration?: boolean;
-    contextIsolation?: boolean;
-    preload?: string;
-    sandbox?: boolean;
-    webSecurity?: boolean;
-    allowRunningInsecureContent?: boolean;
-    webviewTag?: boolean;
-    plugins?: boolean;
-    experimentalFeatures?: boolean;
-    experimentalCanvasFeatures?: boolean;
-    scrollBounce?: boolean;
-    enableBlinkFeatures?: string;
-    disableBlinkFeatures?: string;
-    defaultFontFamily?: {
-      standard?: string;
-      serif?: string;
-      sansSerif?: string;
-      monospace?: string;
-      cursive?: string;
-      fantasy?: string;
-    };
-    defaultFontSize?: number;
-    defaultMonospaceFontSize?: number;
-    minimumFontSize?: number;
-    defaultEncoding?: string;
-    backgroundThrottling?: boolean;
-    offscreen?: boolean;
-    partition?: string;
-  };
+  parentId?: number;
+  isDevTools?: boolean;
+};
+
+export interface WindowInfoParams {
+  isBounds?: boolean;
+  isMaximized?: boolean;
+  isMinimized?: boolean;
+  isFullScreen?: boolean;
+  isVisible?: boolean;
+  isDestroyed?: boolean;
+  isFocused?: boolean;
+  isAlwaysOnTop?: boolean;
 }
 
-export interface WindowState {
-  id: number;
-  isMaximized: boolean;
-  isMinimized: boolean;
-  isVisible: boolean;
-  isFocused: boolean;
-  bounds: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
+export interface WindowInfo {
+  id: number | undefined;
+  title: string | undefined;
+  url: string;
+  bounds?: Electron.Rectangle;
+  isMaximized?: boolean;
+  isMinimized?: boolean;
+  isFullScreen?: boolean;
+  isVisible?: boolean;
+  isDestroyed?: boolean;
+  isFocused?: boolean;
+  isAlwaysOnTop?: boolean;
 }
 
-export interface WindowGroup {
-  route: string;
-  isMultiWindow: boolean;
-  window?: BrowserWindow;
+export interface WindowOperations {
+  createWindow(options?: WindowOptions): Promise<number>;
+  closeWindow(winId?: number): Promise<void>;
+  hideWindow(winId?: number): Promise<void>;
+  showWindow(winId?: number): Promise<void>;
+  focusWindow(winId?: number): Promise<void>;
+  getWindowInfo(params?: WindowInfoParams): Promise<WindowInfo>;
+  minimizeWindow(winId?: number): Promise<void>;
+  maximizeWindow(winId?: number): Promise<void>;
+  toggleMaximizeWindow(winId?: number): Promise<void>;
+  restoreWindow(winId?: number): Promise<void>;
+  reloadWindow(winId?: number): Promise<void>;
+  getDisplayInfo(): Promise<Electron.Display[]>;
 }
 
-export interface WindowManagerOptions {
-  rendererDirectoryName?: string;
-  defaultWindowOptions?: WindowOptions;
-  devServerUrl?: string;
-  enableDevTools?: boolean;
-  autoCenter?: boolean;
-}
+export type ParamToInfoMap = {
+  isBounds: 'bounds';
+  isMaximized: 'isMaximized';
+  isMinimized: 'isMinimized';
+  isFullScreen: 'isFullScreen';
+  isVisible: 'isVisible';
+  isDestroyed: 'isDestroyed';
+  isFocused: 'isFocused';
+  isAlwaysOnTop: 'isAlwaysOnTop';
+};
 
-export type WindowEventType =
-  | 'WINDOW_NEW'
-  | 'WINDOW_CLOSED'
-  | 'WINDOW_HIDE'
-  | 'WINDOW_SHOW'
-  | 'WINDOW_FOCUS'
-  | 'WINDOW_ID'
-  | 'WINDOW_MINI'
-  | 'WINDOW_MAX'
-  | 'WINDOW_MAX_MIN_SIZE'
-  | 'WINDOW_RESTORE'
-  | 'WINDOW_RELOAD'
-  | 'WINDOW_GET_BOUNDS'
-  | 'SCREEN_GET_DISPLAY_INFO';
+export type ParamKey = keyof ParamToInfoMap;
 
-export interface WindowManagerEvents {
-  'window-created': (window: BrowserWindow) => void;
-  'window-closed': (windowId: number) => void;
-  'window-hidden': (windowId: number) => void;
-  'window-shown': (windowId: number) => void;
-  'window-focused': (windowId: number) => void;
-  'window-maximized': (windowId: number) => void;
-  'window-minimized': (windowId: number) => void;
-  'window-restored': (windowId: number) => void;
-  'window-moved': (windowId: number, bounds: WindowState['bounds']) => void;
-  'window-resized': (windowId: number, bounds: WindowState['bounds']) => void;
+declare global {
+  interface Window {
+    windowManager: WindowOperations;
+  }
 }

@@ -5,9 +5,11 @@
 ## 特性
 
 - 窗口创建和管理
+- 窗口组管理
+- 支持开发环境和生产环境
+- 自定义协议支持
 - 窗口状态管理（最大化、最小化、还原等）
 - 窗口事件监听
-- 窗口组管理
 - 安全的渲染进程 API
 - TypeScript 支持
 - 完整的类型定义
@@ -16,8 +18,10 @@
 
 ```bash
 npm install @electron-libraries/window-manager
-# 或者
+# 或
 yarn add @electron-libraries/window-manager
+# 或
+pnpm add @electron-libraries/window-manager
 ```
 
 ## 使用方法
@@ -35,50 +39,44 @@ app.whenReady().then(() => {
   // 创建窗口管理器实例
   windowManager = new WindowManager({
     rendererDirectoryName: 'dist', // 渲染进程目录名
-    enableDevTools: false, // 是否启用开发者工具
-    autoCenter: true, // 是否自动居中窗口
-    defaultWindowOptions: { // 默认窗口选项
-      width: 800,
-      height: 600,
-      // ... 其他 Electron BrowserWindow 选项
+    devServerUrl: 'http://localhost:5173', // 开发服务器 URL（可选）
+    webPreferences: {
+      // 自定义 webPreferences
     }
   });
+
   // 创建主窗口
-  windowManager.createWindow({
+  const mainWindow = windowManager.createWindow({
     isMainWin: true,
     route: '/',
     width: 800,
-    height: 600
+    height: 600,
+    maximize: true // 是否最大化
   });
 
-  // 监听窗口事件
-  windowManager.on('window-created', (window) => {
-    console.log('Window created:', window.id);
+  // 创建子窗口
+  const childWindow = windowManager.createWindow({
+    parentId: mainWindow.id,
+    route: '/child',
+    width: 400,
+    height: 300
   });
-
-  windowManager.on('window-closed', (windowId) => {
-    console.log('Window closed:', windowId);
-  });
-
-  // 启动 IPC 监听
-  windowManager.listen();
 });
 
 // 清理
 app.on('window-all-closed', () => {
-  windowManager.unListen();
-  app.quit();
+  windowManager.closeAllWindow();
 });
 ```
 
 ### 渲染进程
 
 ```typescript
-// 类型定义
+// 类型定义已包含在库中
 declare global {
   interface Window {
     windowManager: {
-      createWindow: (options?: any) => Promise<number>;
+      createWindow: (options?: WindowOptions) => Promise<number>;
       closeWindow: (winId?: number) => Promise<void>;
       hideWindow: (winId?: number) => Promise<void>;
       showWindow: (winId?: number) => Promise<void>;
@@ -88,9 +86,8 @@ declare global {
       restoreWindow: (winId?: number) => Promise<void>;
       reloadWindow: (winId?: number) => Promise<void>;
       focusWindow: (winId: number) => Promise<void>;
-      getWindowId: () => Promise<number>;
-      getWindowBounds: () => Promise<{ x: number; y: number; width: number; height: number }>;
-      getDisplayInfo: () => Promise<Electron.Display>;
+      getWindowInfo: (params?: WindowInfoParams) => Promise<WindowInfo>;
+      getDisplayInfo: () => Promise<Electron.Display[]>;
     };
   }
 }
@@ -104,17 +101,15 @@ async function example() {
     height: 300
   });
 
-  // 获取当前窗口 ID
-  const currentWinId = await window.windowManager.getWindowId();
-
-  // 获取窗口位置和大小
-  const bounds = await window.windowManager.getWindowBounds();
-
-  // 最大化窗口
-  await window.windowManager.maximizeWindow(currentWinId);
+  // 获取窗口信息
+  const windowInfo = await window.windowManager.getWindowInfo({
+    isBounds: true,
+    isMaximized: true,
+    isFocused: true
+  });
 
   // 获取显示器信息
-  const display = await window.windowManager.getDisplayInfo();
+  const displays = await window.windowManager.getDisplayInfo();
 }
 ```
 
@@ -127,37 +122,40 @@ async function example() {
 ```typescript
 interface WindowManagerOptions {
   rendererDirectoryName?: string; // 渲染进程目录名
-  enableDevTools?: boolean; // 是否启用开发者工具
-  autoCenter?: boolean; // 是否自动居中窗口
-  defaultWindowOptions?: WindowOptions; // 默认窗口选项
+  devServerUrl?: string; // 开发服务器 URL
+  icon?: string; // 窗口图标
+  webPreferences?: Electron.WebPreferences; // 自定义 webPreferences
 }
 ```
 
 #### 窗口选项
 
 ```typescript
-interface WindowOptions extends BrowserWindowConstructorOptions {
+interface WindowOptions extends Electron.BrowserWindowConstructorOptions {
   id?: number;
-  isMainWin?: boolean;
   route?: string;
   isMultiWindow?: boolean;
-  parentId?: number;
+  isMainWin?: boolean;
   maximize?: boolean;
+  parentId?: number;
+  isDevTools?: boolean;
 }
 ```
 
-#### 事件
+#### 窗口信息参数
 
-- `window-created`: 窗口创建时触发
-- `window-closed`: 窗口关闭时触发
-- `window-hidden`: 窗口隐藏时触发
-- `window-shown`: 窗口显示时触发
-- `window-focused`: 窗口获得焦点时触发
-- `window-maximized`: 窗口最大化时触发
-- `window-minimized`: 窗口最小化时触发
-- `window-restored`: 窗口还原时触发
-- `window-moved`: 窗口移动时触发
-- `window-resized`: 窗口调整大小时触发
+```typescript
+interface WindowInfoParams {
+  isBounds?: boolean;
+  isMaximized?: boolean;
+  isMinimized?: boolean;
+  isFullScreen?: boolean;
+  isVisible?: boolean;
+  isDestroyed?: boolean;
+  isFocused?: boolean;
+  isAlwaysOnTop?: boolean;
+}
+```
 
 ### 渲染进程 API
 
@@ -173,17 +171,41 @@ interface WindowOptions extends BrowserWindowConstructorOptions {
 - `restoreWindow(winId?: number): Promise<void>`
 - `reloadWindow(winId?: number): Promise<void>`
 - `focusWindow(winId: number): Promise<void>`
-- `getWindowId(): Promise<number>`
-- `getWindowBounds(): Promise<{ x: number; y: number; width: number; height: number }>`
-- `getDisplayInfo(): Promise<Electron.Display>`
+- `getWindowInfo(params?: WindowInfoParams): Promise<WindowInfo>`
+- `getDisplayInfo(): Promise<Electron.Display[]>`
 
 ## 注意事项
 
-1. 确保在主进程中正确初始化 WindowManager 并调用 `listen()` 方法
-2. 在应用退出时调用 `unListen()` 方法清理事件监听
-3. 使用 TypeScript 时，需要添加全局类型定义
-4. 窗口选项中的 `webPreferences` 配置会被默认的安全设置覆盖，如需修改请在 `defaultWindowOptions` 中配置
+1. 确保在主进程中正确初始化 WindowManager
+2. 使用 TypeScript 时，类型定义已包含在库中
+3. 窗口选项中的 `webPreferences` 配置会被默认的安全设置覆盖，如需修改请在构造函数选项中配置
+4. 支持开发环境和生产环境的不同配置
+5. 使用自定义协议加载本地文件
+
+## 开发
+
+```bash
+# 安装依赖
+npm install
+
+# 运行类型检查
+npm run type-check
+
+# 运行测试
+npm test
+
+# 构建
+npm run build
+
+# 代码检查
+npm run lint
+```
+
+## 要求
+
+- Electron >= 28.3.3
+- Node.js >= 14
 
 ## 许可证
 
-MIT 
+MIT © leaf 

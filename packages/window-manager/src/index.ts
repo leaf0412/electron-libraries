@@ -1,19 +1,17 @@
 import WindowManager from './window';
-import type {
-  WindowOptions,
-  WindowState,
-  WindowGroup,
-  WindowManagerOptions,
-  WindowManagerEvents,
-} from './types';
-import type { WindowManagerAPI } from './preload';
+import WindowIpcHandler from './ipc';
+import {
+  createProtocol,
+  registerProtocol,
+  unregisterProtocol,
+} from './protocol';
 
-export default WindowManager;
-export type {
-  WindowOptions,
-  WindowState,
-  WindowGroup,
-  WindowManagerOptions,
-  WindowManagerEvents,
-  WindowManagerAPI,
-}; 
+import './types';
+
+export {
+  WindowManager,
+  WindowIpcHandler,
+  createProtocol,
+  registerProtocol,
+  unregisterProtocol,
+};
