@@ -58,6 +58,87 @@ const fileInfo = await fileManager.getInfo('/path/to/file');
 const exists = await fileManager.exists('/path/to/target');
 ```
 
+### 渲染进程
+
+在渲染进程中，通过预加载脚本暴露的 `fileManager` 对象来使用文件管理功能：
+
+```typescript
+// 读取目录
+const files = await window.fileManager.readDirectory('/path/to/directory');
+
+// 创建文件
+await window.fileManager.createFile('/path/to/file.txt', 'Hello World');
+
+// 创建目录
+await window.fileManager.createDirectory('/path/to/directory');
+
+// 复制文件或目录
+await window.fileManager.copyFile('/path/to/source', '/path/to/destination');
+
+// 移动文件或目录
+await window.fileManager.moveFile('/path/to/source', '/path/to/destination');
+
+// 删除文件或目录
+await window.fileManager.deleteFile('/path/to/target');
+
+// 获取文件信息
+const fileInfo = await window.fileManager.getFileInfo('/path/to/file');
+
+// 检查文件或目录是否存在
+const exists = await window.fileManager.existsFile('/path/to/target');
+```
+
+### 渲染进程类型定义
+
+```typescript
+interface FileOperations {
+  readDirectory: (dirPath: string) => Promise<FileInfo[]>;
+  createDirectory: (dirPath: string) => Promise<void>;
+  createFile: (filePath: string, content?: string) => Promise<void>;
+  readFile: (filePath: string, encoding?: BufferEncoding) => Promise<string>;
+  copyFile: (sourcePath: string, destinationPath: string) => Promise<void>;
+  moveFile: (sourcePath: string, destinationPath: string) => Promise<void>;
+  deleteFile: (targetPath: string) => Promise<void>;
+  getFileInfo: (targetPath: string) => Promise<FileInfo>;
+  existsFile: (targetPath: string) => Promise<boolean>;
+}
+```
+
+### 渲染进程使用示例
+
+```typescript
+// 示例：读取目录并显示文件列表
+async function listFiles(dirPath: string) {
+  try {
+    const files = await window.fileManager.readDirectory(dirPath);
+    files.forEach(file => {
+      console.log(`${file.name} - ${file.isDirectory ? '目录' : '文件'}`);
+    });
+  } catch (error) {
+    console.error('读取目录失败:', error);
+  }
+}
+
+// 示例：创建并写入文件
+async function createAndWriteFile(filePath: string, content: string) {
+  try {
+    await window.fileManager.createFile(filePath, content);
+    console.log('文件创建成功');
+  } catch (error) {
+    console.error('创建文件失败:', error);
+  }
+}
+```
+
+### 渲染进程注意事项
+
+1. 所有操作都是异步的，需要使用 `async/await` 或 Promise 方式调用
+2. 所有路径操作都会自动进行标准化处理
+3. 所有方法都包含完整的错误处理
+4. 支持跨平台路径处理
+5. 文件操作会自动处理权限问题
+6. 渲染进程中的操作实际上是通过 IPC 通信转发到主进程执行的，所以性能上可能比直接在主进程中使用稍慢
+
 ## API 文档
 
 ### FileManager 类
@@ -140,7 +221,7 @@ npm run lint
 ## 要求
 
 - Electron >= 28.3.3
-- Node.js >= 14
+- Node.js >= 20
 
 ## 许可证
 

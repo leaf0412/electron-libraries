@@ -53,5 +53,11 @@
     "typescript"
   ],
   "author": "leaf",
+  "homepage": "https://github.com/leaf0412/electron-libraries/blob/main/packages/file-manager/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leaf0412/electron-libraries.git",
+    "directory": "packages/file-manager"
+  },
   "license": "MIT"
 }
