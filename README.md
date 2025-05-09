@@ -36,7 +36,7 @@
 
 ```bash
 # 克隆项目
-git clone [repository-url]
+git clone https://github.com/leaf0412/electron-libraries.git
 
 # 安装依赖
 pnpm install
