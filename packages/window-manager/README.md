@@ -1,4 +1,4 @@
-# @electron-libraries/window-manager
+# @sky-hi/window-manager
 
 一个用于 Electron 应用的窗口管理库，提供了简单而强大的窗口管理功能。
 
@@ -17,11 +17,11 @@
 ## 安装
 
 ```bash
-npm install @electron-libraries/window-manager
+npm install @sky-hi/window-manager
 # 或
-yarn add @electron-libraries/window-manager
+yarn add @sky-hi/window-manager
 # 或
-pnpm add @electron-libraries/window-manager
+pnpm add @sky-hi/window-manager
 ```
 
 ## 使用方法
@@ -30,7 +30,7 @@ pnpm add @electron-libraries/window-manager
 
 ```typescript
 import { app } from 'electron';
-import WindowManager from '@electron-libraries/window-manager';
+import WindowManager from '@sky-hi/window-manager';
 
 let windowManager: WindowManager;
 

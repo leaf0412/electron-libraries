@@ -1,6 +1,6 @@
 import { ipcRenderer, contextBridge } from 'electron'
 
-import '@electron-libraries/window-manager/preload'
+import '@sky-hi/window-manager/preload'
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', {

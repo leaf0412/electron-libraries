@@ -4,7 +4,7 @@ import {
   WindowIpcHandler,
   registerProtocol,
   unregisterProtocol,
-} from '@electron-libraries/window-manager';
+} from '@sky-hi/window-manager';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
