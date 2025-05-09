@@ -1,4 +1,4 @@
-# @electron-libraries/file-manager
+# @sky-hi/file-manager
 
 一个用于 Electron 应用的文件管理库，提供了简单而强大的文件操作功能。
 
@@ -16,11 +16,11 @@
 ## 安装
 
 ```bash
-npm install @electron-libraries/file-manager
+npm install @sky-hi/file-manager
 # 或
-yarn add @electron-libraries/file-manager
+yarn add @sky-hi/file-manager
 # 或
-pnpm add @electron-libraries/file-manager
+pnpm add @sky-hi/file-manager
 ```
 
 ## 使用方法
@@ -28,7 +28,7 @@ pnpm add @electron-libraries/file-manager
 ### 主进程
 
 ```typescript
-import FileManager from '@electron-libraries/file-manager';
+import FileManager from '@sky-hi/file-manager';
 
 // 获取 FileManager 实例
 const fileManager = FileManager.getInstance();
