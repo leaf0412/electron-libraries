@@ -59,5 +59,8 @@
     "url": "https://github.com/leaf0412/electron-libraries.git",
     "directory": "packages/window-manager"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }

@@ -1,0 +1,11 @@
+{
+  "extends": "../../.release-it.json",
+  "npm": {
+    "publish": true,
+    "publishPath": "."
+  },
+  "git": {
+    "tagName": "window-manager@${version}",
+    "tagAnnotation": "Release window-manager@${version}"
+  }
+}
