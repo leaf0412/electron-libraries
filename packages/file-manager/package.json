@@ -1,5 +1,5 @@
 {
-  "name": "@electron-libraries/file-manager",
+  "name": "@sky-hi/file-manager",
   "version": "0.0.0",
   "description": "A file manager library for Electron applications",
   "main": "dist/index.js",
