@@ -1,0 +1,11 @@
+{
+  "extends": "../../.release-it.json",
+  "npm": {
+    "publish": true,
+    "publishPath": "."
+  },
+  "git": {
+    "tagName": "file-manager@${version}",
+    "tagAnnotation": "Release file-manager@${version}"
+  }
+}
